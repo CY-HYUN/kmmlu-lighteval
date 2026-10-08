@@ -1,0 +1,16 @@
+[project]
+name = "kmmlu-lighteval"
+version = "0.1.0"
+description = "KMMLU as a lighteval custom task, checked against lm-evaluation-harness"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "lighteval>=0.13.0",
+    "lm-eval[hf]>=0.4.13",
+    "xxhash<4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
