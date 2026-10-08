@@ -17,8 +17,8 @@ ROOT = Path(__file__).resolve().parent
 RESULTS = ROOT / "results"
 MODEL = "Qwen/Qwen2.5-0.5B-Instruct"
 MODEL_REVISION = "7ae557604adf67be50417f59c2c2f167def9a775"
-# The two subjects with the fewest prompt tokens; chosen so both tools finish within about 3 hours on a laptop CPU.
-DEFAULT_SUBJECTS = ["Health", "Education"]
+# Five subjects with few prompt tokens, picked so both tools finish within about 3 hours on a laptop CPU.
+DEFAULT_SUBJECTS = ["Health", "Education", "Korean-History", "Accounting", "Math"]
 
 
 def _plain(x):
@@ -125,7 +125,17 @@ def argmax(xs: list[float]) -> int:
 
 
 def compare(subjects: list[str], le_dir: Path, lm_dir: Path) -> list[dict]:
+    from transformers import AutoTokenizer
+
     from kmmlu_task import subset_suffix
+
+    tok = AutoTokenizer.from_pretrained(MODEL, revision=MODEL_REVISION)
+    enc = lambda text: tok(text, add_special_tokens=False)["input_ids"]  # noqa: E731
+
+    def split_tokens_differ(query: str) -> bool:
+        # lighteval 0.13 always tokenizes context and choice separately (pairwise=True in _loglikelihood_tokens);
+        # lm-eval tokenizes context+choice together and splits. They agree when no token crosses the boundary.
+        return any(enc(query + c) != enc(query) + enc(c) for c in (" A", " B", " C", " D"))
 
     table = []
     for s in subjects:
@@ -140,23 +150,31 @@ def compare(subjects: list[str], le_dir: Path, lm_dir: Path) -> list[dict]:
         prompt_diff = [i for i in ids if le[i]["query"] != lm[i]["query"]]
         pred_diff = [i for i in ids if argmax(le[i]["logprobs"]) != argmax(lm[i]["logprobs"])]
         max_abs = max(abs(a - b) for i in ids for a, b in zip(le[i]["logprobs"], lm[i]["logprobs"], strict=True))
+        token_diff = [i for i in ids if split_tokens_differ(lm[i]["query"])]
+        # Smallest lm-eval gap between the top two choices; a flip needs this gap below 2 x max_abs_logprob_diff.
+        min_margin = min(sorted(lm[i]["logprobs"])[-1] - sorted(lm[i]["logprobs"])[-2] for i in ids)
         acc_le = sum(le[i]["acc"] for i in ids) / len(ids)
         acc_lm = sum(lm[i]["acc"] for i in ids) / len(ids)
         table.append({
             "subject": s, "n": len(ids), "acc_lighteval": acc_le, "acc_lm_eval": acc_lm,
             "diff_pp": 100 * (acc_le - acc_lm), "pred_differs": len(pred_diff),
-            "prompt_differs": len(prompt_diff), "pred_differs_ids": pred_diff, "max_abs_logprob_diff": max_abs,
+            "prompt_differs": len(prompt_diff), "tokens_differ": len(token_diff), "pred_differs_ids": pred_diff,
+            "max_abs_logprob_diff": max_abs, "min_top2_margin": min_margin,
         })  # fmt: skip
     return table
 
 
 def print_table(table: list[dict]) -> None:
-    print("| Subject | n | lighteval acc | lm-eval acc | diff (pp) | prompts differ | predictions differ | max abs log-prob diff |")
-    print("|---|---:|---:|---:|---:|---:|---:|---:|")
+    print(
+        "| Subject | n | lighteval acc | lm-eval acc | diff (pp) | prompts differ | tokens differ "
+        "| predictions differ | max abs log-prob diff | min top-2 margin |"
+    )
+    print("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
     for r in table:
         print(
             f"| {r['subject']} | {r['n']} | {r['acc_lighteval']:.4f} | {r['acc_lm_eval']:.4f} | "
-            f"{r['diff_pp']:+.2f} | {r['prompt_differs']} | {r['pred_differs']} | {r['max_abs_logprob_diff']:.2e} |"
+            f"{r['diff_pp']:+.2f} | {r['prompt_differs']} | {r['tokens_differ']} | {r['pred_differs']} | "
+            f"{r['max_abs_logprob_diff']:.2e} | {r['min_top2_margin']:.2e} |"
         )
 
 
