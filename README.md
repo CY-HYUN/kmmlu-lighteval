@@ -168,12 +168,12 @@ inside the script and passed to the client only.
 
 ## Next steps for a lighteval contribution
 
-1. Open an issue on `huggingface/lighteval` first, with their
-   "Evaluation/task request" template (their README: "If you're adding a new
-   feature, please open an issue first"). Propose KMMLU (and ask about
-   HAE-RAE Bench and KoBEST) as `src/lighteval/tasks/tasks/kmmlu.py`, link
-   this comparison, and ask whether they want the lm-eval prompt or their
-   multilingual template style.
+1. Done on 2026-10-10: [lighteval#1424](https://github.com/huggingface/lighteval/issues/1424),
+   opened with their "Evaluation/task request" template, as their README asks ("If
+   you're adding a new feature, please open an issue first"). It proposes KMMLU as
+   `src/lighteval/tasks/tasks/kmmlu.py`, links this comparison, asks whether they want
+   the lm-eval prompt or their multilingual template style, and asks about HAE-RAE Bench
+   and KoBEST.
 2. Wait for a maintainer to answer before writing a pull request. No pull
    request is sent from this repo. lighteval has no CONTRIBUTING file (checked
    2026-10-08), but `huggingface/transformers` CONTRIBUTING.md asks
