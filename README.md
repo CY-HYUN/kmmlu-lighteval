@@ -111,6 +111,28 @@ five subjects above, then prints the table (about 2 hours on the CPU above;
 Per-question outputs go to `results/` (not committed, see Limits).
 `uv run pytest` runs the task checks without a model.
 
+## Claude models through the API (a different protocol)
+
+`scripts/api_eval.py` sends the same prompt string to Claude models through the
+Message Batches API and parses the letter the model writes back (a
+structured-output schema limits the reply to one of A-D; asked in plain
+text, both models started a worked solution instead). That is a
+generative protocol: the API does not expose the per-choice log-likelihoods
+that lm-eval and the lighteval task compare, so its accuracies are not
+comparable with the table above or with published KMMLU scores. The numbers,
+batch ids and spend are in `results/api_models.md` (the only file under
+`results/` that is committed). lighteval's `litellm` endpoint was not used: it
+is generative only, has no Batch API, and needs the `litellm` extra.
+
+```sh
+uv run python scripts/api_eval.py estimate --model claude-haiku-4-5-20251001 --subjects all   # token count on a sample -> USD
+uv run python scripts/api_eval.py submit --model claude-haiku-4-5-20251001 [--subjects all]   # one batch per subject
+uv run python scripts/api_eval.py collect                                                     # fetch ended batches, rewrite results/api_models.md
+```
+
+The API key is read from `%USERPROFILE%/.anthropic/text2cad_api.env` (one line)
+inside the script and passed to the client only.
+
 ## Limits
 
 - Five of 45 subjects, 700 questions, to fit a CPU budget of about 3 hours.

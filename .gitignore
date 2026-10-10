@@ -1,5 +1,6 @@
 .venv/
 __pycache__/
 # Raw per-sample outputs hold KMMLU question text (CC BY-ND 4.0); regenerate them, do not commit.
-results/
+results/*
+!results/api_models.md
 .env
