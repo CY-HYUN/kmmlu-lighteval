@@ -20,6 +20,9 @@ No, as of 2026-10-08:
 - GitHub issues and pull requests: no hit for KMMLU, HAE-RAE or KoBEST. The
   only Korean pull request, #1179, fixes Korean translation literals.
 
+Proposed upstream on 2026-10-10:
+[huggingface/lighteval#1424](https://github.com/huggingface/lighteval/issues/1424).
+
 lighteval does score Korean through multilingual sets that include it
 (`global_mmlu`, `openai_mmlu`, `mkqa`, `paws_x`, `tydiqa`). These are
 translated from English or built across many languages. What is missing is the
