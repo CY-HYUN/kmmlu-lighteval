@@ -21,7 +21,8 @@ No, as of 2026-10-08:
   only Korean pull request, #1179, fixes Korean translation literals.
 
 Proposed upstream on 2026-10-10:
-[huggingface/lighteval#1424](https://github.com/huggingface/lighteval/issues/1424).
+[huggingface/lighteval#1424](https://github.com/huggingface/lighteval/issues/1424) (issue),
+then [huggingface/lighteval#1425](https://github.com/huggingface/lighteval/pull/1425) (pull request, the same task as one file).
 
 lighteval does score Korean through multilingual sets that include it
 (`global_mmlu`, `openai_mmlu`, `mkqa`, `paws_x`, `tydiqa`). These are
@@ -174,8 +175,10 @@ inside the script and passed to the client only.
    `src/lighteval/tasks/tasks/kmmlu.py`, links this comparison, asks whether they want
    the lm-eval prompt or their multilingual template style, and asks about HAE-RAE Bench
    and KoBEST.
-2. Wait for a maintainer to answer before writing a pull request. No pull
-   request is sent from this repo. lighteval has no CONTRIBUTING file (checked
+2. Done on 2026-10-10, before a maintainer answered: [lighteval#1425](https://github.com/huggingface/lighteval/pull/1425) adds
+   `src/lighteval/tasks/tasks/kmmlu.py` (this repo's `kmmlu_task.py`, reformatted with their ruff
+   config), keeps the lm-eval prompt and offers to switch to the template style. The PR
+   says an AI coding assistant was used. Next: answer review comments; the 45-subject GPU run. lighteval has no CONTRIBUTING file (checked
    2026-10-08), but `huggingface/transformers` CONTRIBUTING.md asks
    first-time contributors not to use code agents to create issues or PRs.
    Assume the same norm here: write the issue and any PR by hand.
