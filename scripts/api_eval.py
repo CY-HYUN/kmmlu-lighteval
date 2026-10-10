@@ -154,6 +154,16 @@ def report(metas: list[dict]) -> None:
              "the published KMMLU numbers (they are closer to lm-eval's `kmmlu_direct` variant, which is not run here). "
              f"Dataset `HAERAE-HUB/KMMLU` at `{KMMLU_REVISION[:7]}`, test split, Message Batches API. Spend is computed "
              "from each reply's `usage` at the batch prices in `scripts/api_eval.py`.", ""]
+    full = [m for m in per if len(per[m]) == len(KMMLU_SUBSETS)]
+    if len(full) > 1:  # every model that has all 45 subjects, side by side
+        lines += ["## All 45 subjects, side by side", "", "| Subject | n | " + " | ".join(full) + " |",
+                  "|---|---:|" + "---:|" * len(full)]
+        for s in KMMLU_SUBSETS:
+            lines.append(f"| {s} | {per[full[0]][s]['n']} | " + " | ".join(f"{per[m][s]['correct'] / per[m][s]['n']:.4f}" for m in full) + " |")
+        n = sum(x["n"] for x in per[full[0]].values())
+        lines.append(f"| **micro** | {n} | " + " | ".join(f"{sum(x['correct'] for x in per[m].values()) / n:.4f}" for m in full) + " |")
+        lines.append("| **macro** | 45 | " + " | ".join(f"{sum(x['correct'] / x['n'] for x in per[m].values()) / 45:.4f}" for m in full) + " |")
+        lines.append("")
     for model, subs in per.items():
         lines += [f"## {model}", "", "| Subject | n | acc | unparsed | failed | batch |", "|---|---:|---:|---:|---:|---|"]
         for s in [x for x in KMMLU_SUBSETS if x in subs]:
