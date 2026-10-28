@@ -111,7 +111,8 @@ uv run python reproduce.py
 
 The second command runs lighteval, then lm-eval, on the
 five subjects above, then prints the table (about 2 hours on the CPU above;
-`--subjects Math` runs one subject).
+`--subjects Math` runs one subject, `--subjects all --device cuda` runs all 45 on a GPU;
+on Windows, PyPI's torch wheel is CPU-only, so install a CUDA build first).
 Per-question outputs go to `results/` (not committed, see Limits).
 `uv run pytest` runs the task checks without a model.
 

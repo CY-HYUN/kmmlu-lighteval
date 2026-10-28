@@ -2,6 +2,7 @@
 
     uv run python reproduce.py                       # both tools + compare, default subjects
     uv run python reproduce.py --only compare        # re-read saved outputs only
+    uv run python reproduce.py --subjects all --device cuda   # all 45 subjects on a GPU
 
 Outputs go to results/ (gitignored: per-question files hold KMMLU text, CC BY-ND 4.0).
 """
@@ -26,7 +27,7 @@ def _plain(x):
     return x.tolist() if hasattr(x, "tolist") else [_plain(v) for v in x] if isinstance(x, (list, tuple)) else x
 
 
-def run_lighteval(subjects: list[str], out_dir: Path, limit: int | None = None) -> None:
+def run_lighteval(subjects: list[str], out_dir: Path, limit: int | None = None, device: str = "cpu") -> None:
     """Same steps as `lighteval accelerate` (lighteval/main_accelerate.py), with two Windows workarounds.
 
     lighteval 0.13.0 puts the task name "kmmlu:x|0" into cache and details paths; '|' and ':' are not
@@ -44,7 +45,7 @@ def run_lighteval(subjects: list[str], out_dir: Path, limit: int | None = None) 
         model_name=MODEL,
         revision=MODEL_REVISION,
         dtype="float32",
-        device="cpu",
+        device=device,
         batch_size=1,
         override_chat_template=False,  # lm-eval scores the raw prompt unless --apply_chat_template
     )
@@ -80,7 +81,7 @@ def run_lighteval(subjects: list[str], out_dir: Path, limit: int | None = None) 
         json.dump(pipeline.get_results(), f, indent=2, default=str)
 
 
-def run_lm_eval(subjects: list[str], out_dir: Path, limit: int | None = None) -> None:
+def run_lm_eval(subjects: list[str], out_dir: Path, limit: int | None = None, device: str = "cpu") -> None:
     from kmmlu_task import subset_suffix
 
     cmd = [
@@ -88,7 +89,7 @@ def run_lm_eval(subjects: list[str], out_dir: Path, limit: int | None = None) ->
         "--model", "hf",
         "--model_args", f"pretrained={MODEL},revision={MODEL_REVISION},dtype=float32",
         "--tasks", ",".join(f"kmmlu_{subset_suffix(s)}" for s in subjects),
-        "--device", "cpu",
+        "--device", device,
         "--batch_size", "1",
         "--output_path", str(out_dir),
         "--log_samples",
@@ -180,16 +181,21 @@ def print_table(table: list[dict]) -> None:
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--subjects", nargs="+", default=DEFAULT_SUBJECTS, help="HF config names, e.g. Korean-History")
+    p.add_argument("--subjects", nargs="+", default=DEFAULT_SUBJECTS, help="HF config names, e.g. Korean-History, or 'all' for the 45")
+    p.add_argument("--device", default="cpu", help="passed to both tools, e.g. cuda")
     p.add_argument("--only", choices=["lighteval", "lm_eval", "compare"])
     p.add_argument("--results", type=Path, default=RESULTS)
     p.add_argument("--limit", type=int, help="smoke test only: lighteval draws N random questions, lm-eval takes the first N, so ids do not match")
     a = p.parse_args()
+    if a.subjects == ["all"]:
+        from kmmlu_task import KMMLU_SUBSETS
+
+        a.subjects = KMMLU_SUBSETS
     le_dir, lm_dir = a.results / "lighteval", a.results / "lm_eval"
     for name, fn, out in [("lighteval", run_lighteval, le_dir), ("lm_eval", run_lm_eval, lm_dir)]:
         if a.only in (None, name):
             t = time.time()
-            fn(a.subjects, out, a.limit)
+            fn(a.subjects, out, a.limit, a.device)
             print(f"[{name}] wall time {time.time() - t:.0f} s for {a.subjects}")
     if a.only in (None, "compare"):
         table = compare(a.subjects, le_dir, lm_dir)
