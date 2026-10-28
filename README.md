@@ -165,8 +165,11 @@ inside the script and passed to the client only.
   reports per subject only.
 - The dataset is CC BY-ND 4.0 (from its Hugging Face card). Per-question files
   contain the questions, so they stay out of git; rerun to get them.
-- Only the default log-likelihood variant is ported. lm-eval also has
-  `kmmlu_direct` (generation), `kmmlu_hard`, and chain-of-thought variants.
+- Only the default log-likelihood variant is ported here. The upstream pull
+  request #1425 also carries `kmmlu_direct` (generation, five-shot), added on
+  2026-10-28 by team A of the 2026 Open-Source AI Contributor Challenge
+  (CY-HYUN/lighteval#1). `kmmlu_hard` and chain-of-thought variants are in
+  neither.
 
 ## Next steps for a lighteval contribution
 
