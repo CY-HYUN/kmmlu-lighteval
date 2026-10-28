@@ -4,3 +4,4 @@ __pycache__/
 results/*
 !results/api_models.md
 .env
+!results/gpu_45_comparison.json

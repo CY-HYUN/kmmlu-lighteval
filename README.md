@@ -100,7 +100,88 @@ Wall time on a laptop CPU (Intel i5-1235U, other programs running):
 | Korean-History, Accounting, Math (500 questions) | 2,629 s | 787 s |
 
 Other programs were using the CPU and their load changed during the runs, so
-these times are not a speed benchmark. Not measured on a GPU.
+these times are not a speed benchmark. The GPU run below has its own times.
+
+## All 45 subjects on a GPU
+
+On 2026-10-28, team A of the 2026 Open-Source AI Contributor Challenge
+(@GeonRyoung, @ojm6135, @hyeongrae-kim) ran `reproduce.py --subjects all --device cuda` at commit
+`c731c1e`, with no code or setting changed: same model and revision, float32,
+batch size 1, same dataset revision, 0-shot. GPU: NVIDIA GeForce RTX 4070 Ti
+SUPER 16 GB, on Windows 11 under WSL2 Ubuntu (so the Windows file-name problem
+in Limits did not apply). Wall time: lighteval 1,129 s, lm-eval 695 s, about
+31 minutes with the comparison. Their `comparison.json` is committed as
+`results/gpu_45_comparison.json` (per-subject counts and scores, no question
+text).
+
+| Subject | n | lighteval acc | lm-eval acc | diff (pp) | prompts differ | tokens differ | predictions differ | max abs log-prob diff | min top-2 margin |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Accounting | 100 | 0.2500 | 0.2500 | +0.00 | 0 | 0 | 0 | 4.10e-05 | 1.15e-02 |
+| Agricultural-Sciences | 1,000 | 0.3100 | 0.3100 | +0.00 | 0 | 0 | 0 | 2.34e-04 | 1.41e-03 |
+| Aviation-Engineering-and-Maintenance | 1,000 | 0.3450 | 0.3450 | +0.00 | 0 | 0 | 0 | 1.65e-04 | 9.98e-04 |
+| Biology | 1,000 | 0.2470 | 0.2470 | +0.00 | 0 | 0 | 0 | 5.72e-05 | 6.64e-04 |
+| Chemical-Engineering * | 1,000 | 0.3140 | 0.3140 | +0.00 | 0 | 0 | 0 | 2.93e-04 | 6.39e-05 |
+| Chemistry | 600 | 0.3000 | 0.3000 | +0.00 | 0 | 0 | 0 | 4.96e-05 | 2.00e-03 |
+| Civil-Engineering | 1,000 | 0.3410 | 0.3410 | +0.00 | 0 | 0 | 0 | 7.25e-05 | 9.90e-04 |
+| Computer-Science * | 1,000 | 0.4520 | 0.4520 | +0.00 | 0 | 0 | 0 | 2.60e-04 | 8.11e-05 |
+| Construction | 1,000 | 0.3190 | 0.3190 | +0.00 | 0 | 0 | 0 | 1.88e-04 | 4.13e-04 |
+| Criminal-Law | 200 | 0.2900 | 0.2900 | +0.00 | 0 | 0 | 0 | 5.63e-05 | 5.76e-04 |
+| Ecology | 1,000 | 0.3500 | 0.3500 | +0.00 | 0 | 0 | 0 | 6.48e-05 | 6.39e-04 |
+| Economics | 130 | 0.3077 | 0.3077 | +0.00 | 0 | 0 | 0 | 3.96e-05 | 9.94e-03 |
+| Education | 100 | 0.3600 | 0.3600 | +0.00 | 0 | 0 | 0 | 5.58e-05 | 1.29e-03 |
+| Electrical-Engineering * | 1,000 | 0.3300 | 0.3300 | +0.00 | 0 | 0 | 0 | 3.64e-04 | 3.66e-04 |
+| Electronics-Engineering | 1,000 | 0.3740 | 0.3740 | +0.00 | 0 | 0 | 0 | 5.39e-05 | 3.70e-04 |
+| Energy-Management | 1,000 | 0.2960 | 0.2960 | +0.00 | 0 | 0 | 0 | 6.20e-05 | 3.02e-04 |
+| Environmental-Science | 1,000 | 0.3110 | 0.3110 | +0.00 | 0 | 0 | 0 | 5.39e-05 | 4.64e-04 |
+| Fashion | 1,000 | 0.3140 | 0.3140 | +0.00 | 0 | 0 | 0 | 5.44e-05 | 9.52e-04 |
+| Food-Processing | 1,000 | 0.2910 | 0.2910 | +0.00 | 0 | 0 | 0 | 5.58e-05 | 5.92e-04 |
+| Gas-Technology-and-Engineering | 1,000 | 0.3020 | 0.3020 | +0.00 | 0 | 0 | 0 | 6.01e-05 | 6.69e-04 |
+| Geomatics * | 1,000 | 0.3450 | 0.3450 | +0.00 | 0 | 0 | 0 | 1.51e-04 | 8.39e-05 |
+| Health | 100 | 0.3300 | 0.3300 | +0.00 | 0 | 0 | 0 | 4.63e-05 | 7.74e-03 |
+| Industrial-Engineer | 1,000 | 0.3400 | 0.3400 | +0.00 | 0 | 0 | 0 | 6.01e-05 | 4.22e-04 |
+| Information-Technology | 1,000 | 0.4310 | 0.4310 | +0.00 | 0 | 0 | 0 | 5.20e-05 | 7.06e-04 |
+| Interior-Architecture-and-Design | 1,000 | 0.3720 | 0.3720 | +0.00 | 0 | 0 | 0 | 5.01e-05 | 2.16e-04 |
+| Korean-History | 100 | 0.2300 | 0.2300 | +0.00 | 0 | 0 | 0 | 3.72e-05 | 1.79e-02 |
+| Law | 1,000 | 0.2970 | 0.2970 | +0.00 | 0 | 0 | 0 | 6.53e-05 | 1.56e-04 |
+| Machine-Design-and-Manufacturing | 1,000 | 0.3240 | 0.3240 | +0.00 | 0 | 0 | 0 | 1.12e-04 | 7.92e-04 |
+| Management * | 1,000 | 0.3120 | 0.3120 | +0.00 | 0 | 0 | 0 | 3.48e-03 | 2.01e-03 |
+| Maritime-Engineering * | 600 | 0.3217 | 0.3217 | +0.00 | 0 | 0 | 0 | 5.05e-05 | 5.82e-05 |
+| Marketing | 1,000 | 0.3820 | 0.3820 | +0.00 | 0 | 0 | 0 | 5.91e-05 | 1.82e-03 |
+| Materials-Engineering * | 1,000 | 0.3010 | 0.3010 | +0.00 | 0 | 0 | 0 | 8.16e-04 | 8.68e-04 |
+| Math | 300 | 0.2733 | 0.2733 | +0.00 | 0 | 0 | 0 | 3.77e-05 | 5.41e-04 |
+| Mechanical-Engineering * | 1,000 | 0.3200 | 0.3200 | +0.00 | 0 | 0 | 0 | 3.90e-04 | 3.53e-05 |
+| Nondestructive-Testing | 1,000 | 0.2960 | 0.2960 | +0.00 | 0 | 0 | 0 | 1.01e-04 | 8.82e-04 |
+| Patent | 100 | 0.2600 | 0.2600 | +0.00 | 0 | 0 | 0 | 6.77e-05 | 1.17e-02 |
+| Political-Science-and-Sociology | 300 | 0.2833 | 0.2833 | +0.00 | 0 | 0 | 0 | 4.48e-05 | 1.70e-03 |
+| Psychology | 1,000 | 0.2750 | 0.2750 | +0.00 | 0 | 0 | 0 | 4.91e-05 | 1.67e-04 |
+| Public-Safety * | 1,000 | 0.3080 | 0.3080 | +0.00 | 0 | 0 | 0 | 5.58e-05 | 1.81e-05 |
+| Railway-and-Automotive-Engineering * | 1,000 | 0.3170 | 0.3170 | +0.00 | 0 | 0 | 0 | 6.48e-05 | 6.58e-05 |
+| Real-Estate | 200 | 0.2750 | 0.2750 | +0.00 | 0 | 0 | 0 | 5.05e-05 | 7.99e-04 |
+| Refrigerating-Machinery * | 1,000 | 0.2830 | 0.2830 | +0.00 | 0 | 0 | 0 | 6.68e-05 | 2.96e-05 |
+| Social-Welfare * | 1,000 | 0.2930 | 0.2930 | +0.00 | 0 | 0 | 0 | 7.10e-04 | 5.82e-04 |
+| Taxation | 200 | 0.2450 | 0.2450 | +0.00 | 0 | 0 | 0 | 7.77e-05 | 9.98e-04 |
+| Telecommunications-and-Wireless-Technology | 1,000 | 0.3890 | 0.3890 | +0.00 | 0 | 0 | 0 | 5.39e-05 | 2.26e-04 |
+| **All 45, micro** | **35,030** | **0.3245** | **0.3245** | **+0.00** | **0** | **0** | **0** | **3.48e-03** | **1.81e-05** |
+| **All 45, macro** | | **0.3157** | **0.3157** | **+0.00** | | | | | |
+
+All 35,030 questions: same prompt string, same tokens, same predicted choice,
+so every subject has the same accuracy in both tools. The five CPU subjects
+get the same accuracies as in the CPU table. Micro is the mean over all
+questions (what lm-eval's `kmmlu` group reports), macro the mean over subjects
+(what the KMMLU paper reports).
+
+The log-probability gaps are larger on this GPU than on the CPU: up to
+3.48e-03 (Management) against 5.53e-05. In the 12 subjects marked `*`, the
+smallest top-2 margin is below twice the largest gap, so those two columns
+alone cannot rule out a flipped prediction there (the two values can come from
+different questions). The question-by-question count can: 0 predictions
+differ.
+
+The team ran PyPI lighteval 0.13.0 with this repo's `kmmlu_task.py`, not the
+file in #1425. On 2026-10-28 both files were loaded side by side: the #1425
+file at `76d6194` defines the same 45 log-likelihood tasks (dataset revision,
+subject list, every task setting, and the prompt, choices and gold for a test
+row). It adds the 45 `kmmlu_direct` tasks on top.
 
 ## Reproduce
 
@@ -140,12 +221,12 @@ inside the script and passed to the client only.
 
 ## Limits
 
-- Five of 45 subjects, 700 questions, to fit a CPU budget of about 3 hours.
-  They are five of the six subjects with the fewest prompt tokens (Economics
-  was left out for Korean-History, the most Korea-specific one), not a random
-  sample. Agreement on them supports the prompt and scoring logic; it is not a
-  full-benchmark score. The accuracies (23% to 36%, chance is 25%) are for a
-  0.5B model; the point is the agreement, not the score.
+- The CPU table has five of 45 subjects, 700 questions, to fit a CPU budget
+  of about 3 hours. They are five of the six subjects with the fewest prompt
+  tokens (Economics was left out for Korean-History, the most Korea-specific
+  one), not a random sample. All 45 subjects were run once, on one GPU, by the
+  team named above. The accuracies (23% to 45%, chance is 25%) are for a 0.5B
+  model; the point is the agreement, not the score.
 - One model and one tokenizer. The "tokens differ" count is for the Qwen2.5
   tokenizer only; another tokenizer could merge `：` and ` A` and then the
   tools would differ.
@@ -161,8 +242,8 @@ inside the script and passed to the client only.
 - `xxhash` 4 breaks lighteval 0.13.0 (`xxh64(str)` raises `TypeError`), so
   `pyproject.toml` pins `xxhash<4`.
 - lm-eval's `kmmlu` group reports the micro average (all questions pooled);
-  the KMMLU paper uses the macro average (mean over subjects). This repo
-  reports per subject only.
+  the KMMLU paper uses the macro average (mean over subjects). The GPU table
+  gives both; the CPU table is per subject only.
 - The dataset is CC BY-ND 4.0 (from its Hugging Face card). Per-question files
   contain the questions, so they stay out of git; rerun to get them.
 - Only the default log-likelihood variant is ported here. The upstream pull
@@ -182,10 +263,9 @@ inside the script and passed to the client only.
 2. Done on 2026-10-10, before a maintainer answered: [lighteval#1425](https://github.com/huggingface/lighteval/pull/1425) adds
    `src/lighteval/tasks/tasks/kmmlu.py` (this repo's `kmmlu_task.py`, reformatted with their ruff
    config), keeps the lm-eval prompt and offers to switch to the template style. The PR
-   says an AI coding assistant was used. Next: answer review comments; the 45-subject GPU run. lighteval has no CONTRIBUTING file (checked
+   says an AI coding assistant was used. The 45-subject GPU run was done on 2026-10-28 (above). Next: answer review comments. lighteval has no CONTRIBUTING file (checked
    2026-10-08), but `huggingface/transformers` CONTRIBUTING.md asks
    first-time contributors not to use code agents to create issues or PRs.
    Assume the same norm here: write the issue and any PR by hand.
 3. If they say yes: move the task into their layout (the file docstring already
-   follows their header format), run the full 45 subjects on a GPU, and
-   report micro and macro averages next to lm-eval's.
+   follows their header format).
